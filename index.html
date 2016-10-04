@@ -1,0 +1,119 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="github-status.css" />
+<script src="jquery-3.1.1.min.js"></script>
+<script src="jquery.qrcode.min.js"></script>
+<script src="clipboard.min.js"></script>
+<script src="partial-iso8601.min.js"></script>
+<title>GitHub 状态 API</title>
+</head>
+<body>
+<pre>
+* <a href="/index/">返回到首页</a>
+* <a href="/index/subindex">返回到 "我的子目录"</a>
+</pre>
+<div>
+状态: <span id="github-status" style="width: 75px; display: inline-block"></span>
+<span style="display: inline-block; width: 150px; height: 25px; vertical-align: middle; background: #d0d0d0;">
+<span id="github-status-bar" style="display: block; height: 25px;"></span>
+</span>
+</div>
+<div>更新时间: <span id="github-timediff"></span></div>
+<br />
+<div style="width: 128px; height: 160px; display: inline-block; background: #ccffcc; border: 2px solid #667f66">
+<div style="width: 128px; height: 32px; display: table">
+  <div style="display: table-cell; vertical-align: middle; text-align: center">静态二维码</div>
+</div>
+<div id="github-qrcode" style="width: 128px; height: 128px"></div>
+</div>
+  
+<div style="width: 128px; height: 160px; display: inline-block; background: #ccffcc; border: 2px solid #667f66">
+<div style="width: 128px; height: 32px; display: table">
+  <div style="display: table-cell; vertical-align: middle; text-align: center">魔筷活码</div>
+</div>
+<img style="width: 128px; height: 128px" src="QR-mk.svg" />
+</div>
+  
+<div style="width: 128px; height: 160px; display: inline-block; background: #ccffcc; border: 2px solid #667f66">
+<div style="width: 128px; height: 32px; display: table">
+  <div style="display: table-cell; vertical-align: middle; text-align: center">草料活码</div>
+</div>
+<img style="width: 128px; height: 128px" src="QR-cli.svg" />
+</div>
+
+<div style="width: 128px; height: 160px; display: inline-block; background: #ccffcc; border: 2px solid #667f66">
+<div style="width: 128px; height: 32px; display: table">
+  <div style="display: table-cell; vertical-align: middle; text-align: center">GitHub 活码</div>
+</div>
+<img style="width: 128px; height: 128px" src="QR-gh.svg" />
+</div>
+
+<br />
+<div oncontextmenu="contextM1();">
+<pre>
+* 本站网址: <input type="text" style="width: 400px" readonly="readonly" id="ghAddress" /> <input type="button"
+class="copy-ghAddress" value="复制网址" /> <span style="color: #F00; background-color: #FF0; padding: 5px;
+display: none;" class="copystatus1"></span>
+* <a href="https://status.github.com">查看 GitHub 的状态</a> (英文版)
+</pre>
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+try {
+var clipboard_1 = new Clipboard('.copy-ghAddress', {
+   text: function() {
+      return document.getElementById("ghAddress").value;
+   }
+});
+clipboard_1.on("success", function (e) {
+  var el1 = document.getElementsByClassName("copystatus1")[0];
+  el1.innerHTML = "复制成功";
+  el1.style.display = "";
+  setTimeout(hiddenStatus, 2000);
+});
+clipboard_1.on("error", function (e) {
+  var el1 = document.getElementsByClassName("copystatus1")[0];
+  el1.innerHTML = "复制失败";
+  el1.style.display = "";
+  setTimeout(hiddenStatus, 2000);
+});
+} catch (error) {
+  console.log(error);
+}
+var hiddenStatus = function () {
+  document.getElementsByClassName("copystatus1")[0].style.display = 'none';
+}
+//]]>
+</script>
+<script type="text/javascript">
+//<![CDATA[
+var currentTime, ghLastUpdated, ghStatus, timeDiff;
+var ghxlat = {"good": "正常", "minor": "次要", "major": "重要"}
+function getApiStatus(data) {
+  currentTime = +new Date();
+  ghStatus = data.status;
+  ghLastUpdated = partialParseISO8601(data.last_updated);
+  timeDiff = (currentTime - ghLastUpdated) / 1000;
+
+  document.getElementById("github-status").innerHTML = ghxlat[ghStatus];
+  document.getElementById("github-status-bar").className = ghStatus;
+  document.getElementById("github-timediff").innerHTML = (timeDiff|0) + " 秒之前";
+}
+document.getElementById("ghAddress").value = location.href;
+jQuery(function($){
+  $('#github-qrcode').qrcode({width: 128, height: 128, text: location.href});
+});
+
+var contextM1 = function () {
+  ;
+}
+//]]>
+</script>
+<script src="https://status.github.com/api/status.json?callback=getApiStatus"></script>
+<!-- 调用 GitHub Pages 的百度分享 (https) -->
+<script type="text/javascript">window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"32"},"slide":{"type":"slide","bdImg":"0","bdPos":"right","bdTop":"100"},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到：","viewSize":"32"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tsina","tqq","renren","weixin"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='https://git123hub.github.io/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+</body>
+</html>
